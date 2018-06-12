@@ -1,5 +1,4 @@
 # real-time-mapper
-======
 A software based on QT.
 
 If you want to test it, you can download it and use the qt creator to edit it into your personal settings.
