@@ -1,7 +1,8 @@
 # real-time-mapper
-A software based on QT.
+A software based on QT， running on Ubuntu 16.04.
 
 If you want to test it, you can download it and use the qt creator to edit it into your personal settings.
+It can be run with the kitti dataset.
 
 Dependency<br> 
 ------
