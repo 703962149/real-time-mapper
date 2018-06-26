@@ -15,6 +15,7 @@
 #include "reconstructionthread.h"
 #include "modelpainting.h"
 #include "getcameraposethread.h"
+#include "realtimecamthread.h"
 
 namespace Ui {
 class MainWindow;
@@ -37,8 +38,11 @@ private:
     ReadLocalFileThread *m_readLocalFileThread;
     GetCameraPoseThread *m_getPoseThread;
     ReconstructionThread *m_3dReconstructionThread;
+    RealTimeCamThread *m_realTimeCamThread;
+    ORB_SLAM2::System *m_slam;
 
-    bool m_readingLocalFile;
+    bool m_readingLocalFileFlag;
+    bool m_runningRealTimeModeFlag;
 
 private slots:
 
@@ -52,11 +56,14 @@ private slots:
     void on_LocalImageModeButton_clicked();
     void on_RealTimeModeButton_clicked();
     void on_ExitButton_clicked();
+    void on_ReadCalibOfRealTimeModeButton_clicked();
+    void on_ReconstructionButton_clicked();
 
     void DetectNewCalibParam();
     void DetectNewStereoImage();
     void DetectNewCameraPose();
     void DetectNewMap();
+    void DetectNewCamImage();
 
 };
 

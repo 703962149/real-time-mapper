@@ -21,11 +21,11 @@ public:
     ~ReconstructionThread();
 
     //Send image and pose from the mainwindow thread to this vo thread.
-    void SendImageAndPose(StereoImage::StereoImageParameters &s, Matrix H);
+    void SendImageAndPose(StereoImage::StereoImageParameters &s, libviso2_Matrix H);
 
-    //The funtion for the mainwindow to get the 3d map points and the homographymatrix
+    //The funtion for the mainwindow to get the 3d map points and the homographylibviso2_Matrix
     std::vector<ModelPainting::Point3D> GetMapPoints (){return m_mapPoints;}
-    Matrix GetHomographyTotal() { return m_HomographyMatrix; }
+    libviso2_Matrix GetHomographyTotal() { return m_HomographyMatrix; }
 
     void PickupNewMap() { m_pickedNewMap = true; }
 
@@ -43,7 +43,7 @@ private:
         float*   X;      // 3d coordinates
         float*   Y;
         float*   Z;
-        Matrix   H;      // extrinsics
+        libviso2_Matrix   H;      // extrinsics
         int32_t  width;  // image dimensions
         int32_t  height;
         int32_t  idx;    // index in point list
@@ -56,7 +56,7 @@ private:
             Y = 0;
             Z = 0;
 
-            H = Matrix();
+            H = libviso2_Matrix();
             width = 0;
             height = 0;
             idx = 0;
@@ -91,7 +91,7 @@ private:
                 Z = 0;
             }
 
-            H = Matrix();
+            H = libviso2_Matrix();
             width = 0;
             height = 0;
             idx = 0;
@@ -166,7 +166,7 @@ private:
     float m_showingMinDistance;
     float m_showingMaxDistance;
 
-    Matrix m_HomographyMatrix;
+    libviso2_Matrix m_HomographyMatrix;
 
     double m_f; // x focal length in pixels.
     double m_cu; // principal point (u-coordinate) in pixels

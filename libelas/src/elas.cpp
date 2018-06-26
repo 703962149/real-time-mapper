@@ -453,7 +453,7 @@ vector<Elas::support_pt> Elas::computeSupportMatches(uint8_t* I1_desc,uint8_t* I
         D_candidate_stepsize += D_candidate_stepsize%2;
     }
 
-    // create matrix for saving disparity candidates
+    // create libviso2_Matrix for saving disparity candidates
     int32_t D_can_width  = 0;
     int32_t D_can_height = 0;
     for (int32_t u=0; u<_width;  u+=D_candidate_stepsize) D_can_width++;
@@ -602,8 +602,8 @@ vector<Elas::triangle> Elas::computeDelaunayTriangulation(vector<support_pt> p_s
 void Elas::computeDisparityPlanes(vector<support_pt> p_support,vector<triangle> &tri)
 {
     // init matrices
-    Matrix A(3,3);
-    Matrix b(3,1);
+    libviso2_Matrix A(3,3);
+    libviso2_Matrix b(3,1);
 
     // for all triangles do
     for (vector<triangle>::size_type i=0; i<tri.size(); i++)
@@ -613,7 +613,7 @@ void Elas::computeDisparityPlanes(vector<support_pt> p_support,vector<triangle> 
         int32_t c2 = tri[i].c2;
         int32_t c3 = tri[i].c3;
 
-        // compute matrix A for linear system of left triangle
+        // compute libviso2_Matrix A for linear system of left triangle
         A.val[0][0] = p_support[c1].u;
         A.val[1][0] = p_support[c2].u;
         A.val[2][0] = p_support[c3].u;
@@ -642,7 +642,7 @@ void Elas::computeDisparityPlanes(vector<support_pt> p_support,vector<triangle> 
             tri[i].t1c = 0;
         }
 
-        // compute matrix A for linear system of right triangle
+        // compute libviso2_Matrix A for linear system of right triangle
         A.val[0][0] = p_support[c1].u-p_support[c1].d;
         A.val[1][0] = p_support[c2].u-p_support[c2].d;
         A.val[2][0] = p_support[c3].u-p_support[c3].d;

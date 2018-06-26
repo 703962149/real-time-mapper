@@ -63,6 +63,8 @@ public:
         int            step;
         double         time;
 
+        cv::Mat        m_orbPose;
+
         /*
          * Default constructor.
          */
@@ -116,6 +118,7 @@ public:
             height    = src.height;
             step      = src.step;
             time      = src.time;
+            m_orbPose = src.m_orbPose;
         }
 
 
@@ -143,7 +146,10 @@ public:
     void GetKittiImages(KittiImage m_kittiImage[2], std::string m_kittiImagePath, int index);
 
     //Copy two image to an stereo object.
-    void SetStereoImage( unsigned char* data, int width, int height, int step, bool cam_left, double captured_time );
+    void SetStereoImage( unsigned char* imageData, int width, int height, int step, bool cam_left, double captured_time );
+
+    //Set orbslam2 pose matrix
+    void SetOrbPose(cv::Mat PoseMatrix){m_stereoImage->m_orbPose = PoseMatrix;}
 
     //the interface for mainthread to get the stereoimage and send to other thread
     StereoImageParameters* GetCurrStereoImage(){return m_stereoImage;}
@@ -169,6 +175,7 @@ public:
 
     QImage m_displayLeftImage;
     //QImage m_displayRightImage;
+
 
 private:
 

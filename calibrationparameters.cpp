@@ -2,7 +2,7 @@
 
 CalibrationParameters::CalibrationParameters(QObject *parent) : QObject(parent)
 {
-
+    m_runningDataType = OTHER_DATASET_FLAG;
 }
 
 CalibrationParameters::~CalibrationParameters()
@@ -46,10 +46,17 @@ bool CalibrationParameters::GetDadaoCalibParam(string pathOfDadaoCalibFile)
         fs["P1"]>>m_dadaoCalibParam.m_P1;
         fs["P2"]>>m_dadaoCalibParam.m_P2;
         fs["Q"]>>m_dadaoCalibParam.m_Q;
+        fs["ROI_top"] >> m_dadaoCalibParam.m_ROI.y;
+        fs["ROI_left"] >> m_dadaoCalibParam.m_ROI.x;
+        fs["ROI_right"] >> m_dadaoCalibParam.m_ROI.width;
+        fs["ROI_bottom"] >> m_dadaoCalibParam.m_ROI.height;
         fs["Left_Mapping_1"]>>m_dadaoCalibParam.m_Left_Mapping_1;
         fs["Left_Mapping_2"]>>m_dadaoCalibParam.m_Left_Mapping_2;
         fs["Right_Mapping_1"]>>m_dadaoCalibParam.m_Right_Mapping_1;
         fs["Right_Mapping_2"]>>m_dadaoCalibParam.m_Right_Mapping_2;
+
+        m_dadaoCalibParam.m_ROI.height -= m_dadaoCalibParam.m_ROI.y;
+        m_dadaoCalibParam.m_ROI.width -= m_dadaoCalibParam.m_ROI.x;
 
         m_dadaoCalibParam.m_f = m_dadaoCalibParam.m_P1.at<double>(0,0);
         m_dadaoCalibParam.m_cu = m_dadaoCalibParam.m_P1.at<double>(0,2);
@@ -112,6 +119,86 @@ bool CalibrationParameters::GetKittiCalibParam(string pathOfKittiCalibFile)
     while (!m_pickedNewCalibParam) usleep(1000);
 
     kittiParam.clear();
+    return true;
+}
+
+bool CalibrationParameters::GetLoitorCalibParam(string pathOfLoitorCalibFile)
+{
+    cv::FileStorage fs;
+    fs.open(pathOfLoitorCalibFile, cv::FileStorage::READ);
+
+    // if failed to open a file
+    if(!fs.isOpened())
+    {
+        std::cout<<"Failed to read file 'StereoCalib.yml'(loitor calib file). "<<std::endl;
+        return false;
+    }
+    else
+    {
+
+        fs["P1"]>>m_loitorCalibParam.m_P1;
+        fs["P2"]>>m_loitorCalibParam.m_P2;
+        fs["Left_Mapping_1"]>>m_loitorCalibParam.m_Left_Mapping_1;
+        fs["Left_Mapping_2"]>>m_loitorCalibParam.m_Left_Mapping_2;
+        fs["Right_Mapping_1"]>>m_loitorCalibParam.m_Right_Mapping_1;
+        fs["Right_Mapping_2"]>>m_loitorCalibParam.m_Right_Mapping_2;
+
+        m_loitorCalibParam.m_f = m_loitorCalibParam.m_P1.at<double>(0,0);
+        m_loitorCalibParam.m_cu = m_loitorCalibParam.m_P1.at<double>(0,2);
+        m_loitorCalibParam.m_cv = m_loitorCalibParam.m_P1.at<double>(1,2);
+        m_loitorCalibParam.m_baseline = -(m_loitorCalibParam.m_P2.at<double>(0,3)/m_loitorCalibParam.m_f);
+
+        /*
+        cv::Mat K_l, K_r, P_l, P_r, R_l, R_r, D_l, D_r;
+        fs["LEFT.K"] >> K_l;
+        fs["RIGHT.K"] >> K_r;
+
+        fs["LEFT.P"] >> P_l;
+        fs["RIGHT.P"] >> P_r;
+
+        fs["LEFT.R"] >> R_l;
+        fs["RIGHT.R"] >> R_r;
+
+        fs["LEFT.D"] >> D_l;
+        fs["RIGHT.D"] >> D_r;
+
+        int rows_l = fs["LEFT.height"];
+        int cols_l = fs["LEFT.width"];
+        int rows_r = fs["RIGHT.height"];
+        int cols_r = fs["RIGHT.width"];
+
+        if(K_l.empty() || K_r.empty() || P_l.empty() || P_r.empty() || R_l.empty() || R_r.empty() || D_l.empty() || D_r.empty() ||
+                rows_l==0 || rows_r==0 || cols_l==0 || cols_r==0)
+        {
+            cerr << "ERROR: Calibration parameters to rectify stereo are missing!" << endl;
+            return -1;
+        }
+
+        cv::Mat M1l,M2l,M1r,M2r;
+        cv::initUndistortRectifyMap(K_l,D_l,R_l,P_l.rowRange(0,3).colRange(0,3),cv::Size(cols_l,rows_l),CV_32F,M1l,M2l);
+        cv::initUndistortRectifyMap(K_r,D_r,R_r,P_r.rowRange(0,3).colRange(0,3),cv::Size(cols_r,rows_r),CV_32F,M1r,M2r);
+
+        m_loitorCalibParam.m_P1=P_l;
+        m_loitorCalibParam.m_P2=P_r;
+        m_loitorCalibParam.m_Left_Mapping_1=M1l;
+        m_loitorCalibParam.m_Left_Mapping_2=M2l;
+        m_loitorCalibParam.m_Right_Mapping_1=M1r;
+        m_loitorCalibParam.m_Right_Mapping_2=M2r;
+
+        m_loitorCalibParam.m_f = m_loitorCalibParam.m_P1.at<double>(0,0);
+        m_loitorCalibParam.m_cu = m_loitorCalibParam.m_P1.at<double>(0,2);
+        m_loitorCalibParam.m_cv = m_loitorCalibParam.m_P1.at<double>(1,2);
+        m_loitorCalibParam.m_baseline = -(m_loitorCalibParam.m_P2.at<double>(0,3)/m_loitorCalibParam.m_f);
+*/
+        std::cout<<"Read file 'StereoCalib.yml'(loitor calib file) success(calibpointer)."<<std::endl;
+    }
+    m_runningDataType = LOITOR_DATASET_FLAG;
+
+    m_pickedNewCalibParam = false;
+    emit DetectNewCalibParam();
+    while (!m_pickedNewCalibParam) usleep(1000);
+
+    fs.release();
     return true;
 }
 

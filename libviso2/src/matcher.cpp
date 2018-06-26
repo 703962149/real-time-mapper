@@ -206,7 +206,7 @@ void Matcher::pushBack(uint8_t *I1,uint8_t* I2,int32_t* dims,const bool replace)
 
 //==============================================================================//
 
-void Matcher::matchFeatures(int32_t method, Matrix *Tr_delta)
+void Matcher::matchFeatures(int32_t method, libviso2_Matrix *Tr_delta)
 {
     //////////////////
     // sanity check //
@@ -1143,7 +1143,7 @@ inline void Matcher::findMatch(int32_t* m1,const int32_t &i1,int32_t* m2,const i
 
 void Matcher::matching(int32_t *m1p,int32_t *m2p,int32_t *m1c,int32_t *m2c,
                        int32_t n1p,int32_t n2p,int32_t n1c,int32_t n2c,
-                       vector<Matcher::p_match> &p_matched,int32_t method,bool use_prior,Matrix *Tr_delta)
+                       vector<Matcher::p_match> &p_matched,int32_t method,bool use_prior,libviso2_Matrix *Tr_delta)
 {
     // descriptor step size (number of int32_t elements in struct)
     int32_t step_size = sizeof(Matcher::maximum)/sizeof(int32_t);
@@ -1544,7 +1544,7 @@ bool Matcher::parabolicFitting(const uint8_t* I1_du,const uint8_t* I1_dv,const i
                                const uint8_t* I2_du,const uint8_t* I2_dv,const int32_t* dims2,
                                const float &u1,const float &v1,
                                float       &u2,float       &v2,
-                               Matrix At,Matrix AtA,
+                               libviso2_Matrix At,libviso2_Matrix AtA,
                                uint8_t* desc_buffer)
 {
     // check if parabolic fitting is feasible (descriptors are within _margin)
@@ -1558,7 +1558,7 @@ bool Matcher::parabolicFitting(const uint8_t* I1_du,const uint8_t* I1_dv,const i
     computeSmallDescriptor(I1_du,I1_dv,dims1[2],(int32_t)u1,(int32_t)v1,desc_buffer);
     xmm1 = _mm_load_si128((__m128i*)(desc_buffer));
 
-    // compute cost matrix
+    // compute cost libviso2_Matrix
     int32_t cost[49];
     for (int32_t dv=0; dv<7; dv++)
     {
@@ -1594,7 +1594,7 @@ bool Matcher::parabolicFitting(const uint8_t* I1_du,const uint8_t* I1_dv,const i
     }
 
     // solve least squares system
-    Matrix c(9,1);
+    libviso2_Matrix c(9,1);
     for (int32_t i=-1; i<=+1; i++)
     {
         for (int32_t j=-1; j<=+1; j++)
@@ -1603,7 +1603,7 @@ bool Matcher::parabolicFitting(const uint8_t* I1_du,const uint8_t* I1_dv,const i
             c._val[(i+1)*3+(j+1)][0] = cost_curr;
         }
     }
-    Matrix b = At*c;
+    libviso2_Matrix b = At*c;
     if (!b.solve(AtA))
     {
         return false;
@@ -1649,7 +1649,7 @@ void Matcher::relocateMinimum(const uint8_t* I1_du,const uint8_t* I1_dv,const in
     computeSmallDescriptor(I1_du,I1_dv,dims1[2],(int32_t)u1,(int32_t)v1,desc_buffer);
     xmm1 = _mm_load_si128((__m128i*)(desc_buffer));
 
-    // compute cost matrix
+    // compute cost libviso2_Matrix
     int32_t cost[25];
     for (int32_t dv=0; dv<5; dv++)
     {
@@ -1700,9 +1700,9 @@ void Matcher::refinement(vector<Matcher::p_match> &p_matched,int32_t method)
                           1, 1,-1,-1, 1, 1,
                           0, 1, 0, 0, 1, 1,
                           1, 1, 1, 1, 1, 1};
-    Matrix A(9,6,A_data);
-    Matrix At  = ~A;
-    Matrix AtA = At*A;
+    libviso2_Matrix A(9,6,A_data);
+    libviso2_Matrix At  = ~A;
+    libviso2_Matrix AtA = At*A;
 
     uint8_t* I1p_du_fit = _I1p_du;
     uint8_t* I1p_dv_fit = _I1p_dv;

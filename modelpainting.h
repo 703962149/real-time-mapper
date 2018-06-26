@@ -1,6 +1,7 @@
 #ifndef MODELPAINTING_H
 #define MODELPAINTING_H
 
+#include <GL/glew.h>
 #include <QWidget>
 #include <GL/glu.h>
 #include <GL/glut.h>
@@ -30,9 +31,9 @@ public:
 
     void clearAll ();
 
-    void AddCamera(Matrix HomographyMatrix, float s);
+    void AddCamera(libviso2_Matrix HomographyMatrix, float s);
     void AddPoints(std::vector<Point3D> p);
-    void FollowCamera(Matrix H);
+    void FollowCamera(libviso2_Matrix H);
 
     void SetBackgroundFlag(bool background) { m_backgroundFlag = background; updateGL(); }
     void SetShowCamerasFlag(bool showCamFlag) { m_showCamFlag = showCamFlag; updateGL(); }

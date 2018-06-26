@@ -11,6 +11,7 @@
 
 #include "libviso2/src/viso_stereo.h"
 #include "libviso2/src/timer.h"
+#include "System.h"
 
 class GetCameraPoseThread : public QThread
 {
@@ -22,15 +23,15 @@ public:
     ~GetCameraPoseThread();
 
     StereoImage::StereoImageParameters* GetStereoImage() { return m_stereoImage; }
-    Matrix GetHomographyTotal() { return m_HomographyMatrix; }
+    libviso2_Matrix GetHomographyTotal() { return m_HomographyMatrix; }
     void ResetHomographyTotal() { m_HomographyMatrix.eye(); }
     void PickUpNewCamPose() { m_pickedNewCamPose = true; }
 
     //Send image from the mainwindow thread to this vo thread.
     void SendImage(StereoImage::StereoImageParameters &s, bool poseFileStatus);
 
-    //The Homography matrix here is from the first coordination to the current coordination
-    Matrix m_HomographyMatrix;
+    //The Homography libviso2_Matrix here is from the first coordination to the current coordination
+    libviso2_Matrix m_HomographyMatrix;
 
 protected:
 

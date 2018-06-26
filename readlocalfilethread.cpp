@@ -53,7 +53,7 @@ void ReadLocalFileThread::run()
             return;
         }
         //The speed of reading images.
-        int fps = 5;
+        int fps = 10;
         //Temporary address to send data.
         unsigned char* dadaoLeftImageData;
         unsigned char* dadaoRightImageData;
@@ -63,9 +63,6 @@ void ReadLocalFileThread::run()
         DadaoImage m_dadaoImage[2];
         for(int32_t i=0; i<m_stereo->m_numOfDadaoImage; ++i)
         {
-            //Timer t;
-            //t.start("read");
-
             //Get left and right images.
             m_stereo->GetDadaoImages(m_dadaoImage, m_dadaoImagePath, i);
 
@@ -76,8 +73,14 @@ void ReadLocalFileThread::run()
                   m_calib->m_dadaoCalibParam.m_Right_Mapping_1, m_calib->m_dadaoCalibParam.m_Right_Mapping_2,
                   cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar());
 
-            IplImage tempImageLeft = m_tempL;
-            IplImage tempImageRight = m_tempR;
+            cv::Mat tempLeftMat;
+            cv::Mat tempRightMat;
+
+            m_tempL(m_calib->m_dadaoCalibParam.m_ROI).copyTo(tempLeftMat);
+            m_tempR(m_calib->m_dadaoCalibParam.m_ROI).copyTo(tempRightMat);
+
+            IplImage tempImageLeft = tempLeftMat;
+            IplImage tempImageRight = tempRightMat;
 
             m_dadaoImage[0].m_rectifiedIplImage = cvCloneImage(&tempImageLeft);
             m_dadaoImage[1].m_rectifiedIplImage = cvCloneImage(&tempImageRight);
@@ -95,7 +98,6 @@ void ReadLocalFileThread::run()
             usleep(1e6/fps);
             cvReleaseImage(&m_dadaoImage[0].m_rectifiedIplImage);
             cvReleaseImage(&m_dadaoImage[1].m_rectifiedIplImage);
-            //t.plot();
         }
     }
     //=====================================================================================//

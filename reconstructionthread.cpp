@@ -10,8 +10,8 @@ ReconstructionThread::ReconstructionThread(CalibrationParameters *calib, StereoI
     //it is the max map point distance
     //if any point is far from the camera over this number, it would not be shown
     //TODO: make it could be changed in the mainwindow
-    m_showingMinDistance = 1;
-    m_showingMaxDistance = 40;
+    m_showingMinDistance = 0.01;
+    m_showingMaxDistance = 50;
 
     if (m_calib->CheckRunDataType() == m_calib->DADAO_DATASET_FLAG)
     {
@@ -27,9 +27,12 @@ ReconstructionThread::ReconstructionThread(CalibrationParameters *calib, StereoI
         m_cv = m_calib->m_KittiCalibParam.m_cv; // principal point (v-coordinate) in pixels
         m_baseline = m_calib->m_KittiCalibParam.m_baseline; // baseline in meters
     }
-    else if (m_calib->CheckRunDataType() == m_calib->OTHER_DATASET_FLAG)
+    else if (m_calib->CheckRunDataType() == m_calib->LOITOR_DATASET_FLAG)
     {
-
+        m_f = m_calib->m_loitorCalibParam.m_f; // x focal length in pixels.
+        m_cu = m_calib->m_loitorCalibParam.m_cu; // principal point (u-coordinate) in pixels
+        m_cv = m_calib->m_loitorCalibParam.m_cv; // principal point (v-coordinate) in pixels
+        m_baseline = m_calib->m_loitorCalibParam.m_baseline; // baseline in meters
     }
 }
 
@@ -44,7 +47,7 @@ ReconstructionThread::~ReconstructionThread()
 
 }
 
-void ReconstructionThread::SendImageAndPose(StereoImage::StereoImageParameters &s, Matrix H)
+void ReconstructionThread::SendImageAndPose(StereoImage::StereoImageParameters &s, libviso2_Matrix H)
 {
     if (m_stereoImage!=0)
     {

@@ -242,8 +242,8 @@ VisualOdometryStereo::result VisualOdometryStereo::updateParameters(vector<Match
     computeResidualsAndJacobian(tr,active);
 
     // init
-    Matrix A(6,6);
-    Matrix B(6,1);
+    libviso2_Matrix A(6,6);
+    libviso2_Matrix B(6,1);
 
     // fill matrices A and B
     for (int32_t m=0; m<6; m++)
@@ -312,7 +312,7 @@ void VisualOdometryStereo::computeResidualsAndJacobian(vector<double> &tr,vector
     double sx = sin(rx); double cx = cos(rx); double sy = sin(ry);
     double cy = cos(ry); double sz = sin(rz); double cz = cos(rz);
 
-    // compute rotation matrix and derivatives
+    // compute rotation libviso2_Matrix and derivatives
     double r00    = +cy*cz;          double r01    = -cy*sz;          double r02    = +sy;
     double r10    = +sx*sy*cz+cx*sz; double r11    = -sx*sy*sz+cx*cz; double r12    = -sx*cy;
     double r20    = -cx*sy*cz+sx*sz; double r21    = +cx*sy*sz+sx*cz; double r22    = +cx*cy;

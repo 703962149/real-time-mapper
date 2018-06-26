@@ -31,7 +31,7 @@ VisualOdometry::VisualOdometry(parameters param) : _param(param)
     _p_observe = 0;
     _p_predict = 0;
     _matcher   = new Matcher(param.match);
-    _Tr_delta  = Matrix::eye(4);
+    _Tr_delta  = libviso2_Matrix::eye(4);
     _Tr_valid  = false;
     srand(0);
 }
@@ -56,7 +56,7 @@ bool VisualOdometry::updateMotion()
         return false;
     }
 
-    // set transformation matrix (previous to current frame)
+    // set transformation libviso2_Matrix (previous to current frame)
     _Tr_delta = transformationVectorToMatrix(tr_delta);
     _Tr_valid = true;
 
@@ -66,7 +66,7 @@ bool VisualOdometry::updateMotion()
 
 //==============================================================================//
 
-Matrix VisualOdometry::transformationVectorToMatrix(vector<double> tr)
+libviso2_Matrix VisualOdometry::transformationVectorToMatrix(vector<double> tr)
 {
     // extract parameters
     double rx = tr[0];
@@ -87,13 +87,13 @@ Matrix VisualOdometry::transformationVectorToMatrix(vector<double> tr)
 
 
     // compute transformation
-    Matrix Tr(4,4);
+    libviso2_Matrix Tr(4,4);
     Tr._val[0][0] = +cy*cz;          Tr._val[0][1] = -cy*sz;          Tr._val[0][2] = +sy;    Tr._val[0][3] = tx;
     Tr._val[1][0] = +sx*sy*cz+cx*sz; Tr._val[1][1] = -sx*sy*sz+cx*cz; Tr._val[1][2] = -sx*cy; Tr._val[1][3] = ty;
     Tr._val[2][0] = -cx*sy*cz+sx*sz; Tr._val[2][1] = +cx*sy*sz+sx*cz; Tr._val[2][2] = +cx*cy; Tr._val[2][3] = tz;
     Tr._val[3][0] = 0;               Tr._val[3][1] = 0;               Tr._val[3][2] = 0;      Tr._val[3][3] = 1;
 
-   /* Matrix BR(1,12);
+   /* libviso2_Matrix BR(1,12);
     BR._val[0][0] = +cy*cz;          BR._val[0][1] = -cy*sz;          BR._val[0][2] = +sy;    BR._val[0][3] = tx;
     BR._val[0][4] = +sx*sy*cz+cx*sz; BR._val[0][5] = -sx*sy*sz+cx*cz; BR._val[0][6] = -sx*cy; BR._val[0][7] = ty;
     BR._val[0][8] = -cx*sy*cz+sx*sz; BR._val[0][9] = +cx*sy*sz+sx*cz; BR._val[0][10] = +cx*cy; BR._val[0][11] = tz;

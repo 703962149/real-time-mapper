@@ -83,13 +83,13 @@ public:
     }
 
     // returns transformation from previous to current coordinates as a 4x4
-    // homogeneous transformation matrix Tr_delta, with the following semantics:
+    // homogeneous transformation libviso2_Matrix Tr_delta, with the following semantics:
     // p_t = Tr_delta * p_ {t-1} takes a point in the camera coordinate system
     // at time t_1 and maps it to the camera coordinate system at time t.
     // note: getMotion() returns the last transformation even when process()
     // has failed. this is useful if you wish to linearly extrapolate occasional
     // frames for which no correspondences have been found
-    Matrix getMotion() { return _Tr_delta; }
+    libviso2_Matrix getMotion() { return _Tr_delta; }
 
     // returns previous to current feature matches from internal matcher
     std::vector<Matcher::p_match> getMatches() { return _matcher->getMatches(); }
@@ -108,10 +108,10 @@ public:
     // and you want to cancel the change of (unknown) camera gain.
     float getGain(std::vector<int32_t> inliers) { return _matcher->getGain(inliers); }
 
-    // streams out the current transformation matrix Tr_delta
+    // streams out the current transformation libviso2_Matrix Tr_delta
     friend std::ostream& operator<<(std::ostream &os,VisualOdometry &viso)
     {
-        Matrix p = viso.getMotion();
+        libviso2_Matrix p = viso.getMotion();
         os << p._val[0][0] << " " << p._val[0][1] << " "  << p._val[0][2]  << " "  << p._val[0][3] << " ";
         os << p._val[1][0] << " " << p._val[1][1] << " "  << p._val[1][2]  << " "  << p._val[1][3] << " ";
         os << p._val[2][0] << " " << p._val[2][1] << " "  << p._val[2][2]  << " "  << p._val[2][3];
@@ -123,8 +123,8 @@ protected:
   // calls bucketing and motion estimation
   bool updateMotion();
 
-  // compute transformation matrix from transformation vector  
-  Matrix transformationVectorToMatrix(std::vector<double> tr);
+  // compute transformation libviso2_Matrix from transformation vector
+  libviso2_Matrix transformationVectorToMatrix(std::vector<double> tr);
 
   // compute motion from previous to current coordinate system
   // if motion could not be computed, resulting vector will be of size 0
@@ -133,7 +133,7 @@ protected:
   // get random and unique sample of num numbers from 1:N
   std::vector<int32_t> getRandomSample(int32_t N,int32_t num);
 
-  Matrix                         _Tr_delta;   // transformation (previous -> current frame)
+  libviso2_Matrix                         _Tr_delta;   // transformation (previous -> current frame)
   bool                           _Tr_valid;   // motion estimate exists?
   Matcher*                       _matcher;    // feature matcher
   std::vector<int32_t>           _inliers;    // inlier set

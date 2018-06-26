@@ -3,10 +3,10 @@
 using namespace std;
 
 //DRAWING_POINT_SIZE means the size of the painting points
-#define DRAWING_POINT_SIZE 1.5
+#define DRAWING_POINT_SIZE 1
 //LIMIT_NUM_OF_FARME means how much frame would be kept.
 //TODO: make it can be changed in the main window.
-#define LIMIT_NUM_OF_FARME 5
+#define LIMIT_NUM_OF_FARME 10
 
 ModelPainting::ModelPainting(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers),parent)
@@ -18,8 +18,8 @@ ModelPainting::ModelPainting(QWidget *parent)
     m_currPose.ty   = 0;
     m_currPose.tz   = -1.5;
     m_backgroundFlag = true;
-    m_showCamFlag = true;
-    m_followCamFlag = false;
+    m_showCamFlag = false;
+    m_followCamFlag = true;
 }
 
 ModelPainting::~ModelPainting()
@@ -42,10 +42,10 @@ void ModelPainting::clearAll()
 //===========================Camera and points=================================//
 //=============================================================================//
 
-void ModelPainting::AddCamera(Matrix HomographyMatrix, float s)
+void ModelPainting::AddCamera(libviso2_Matrix HomographyMatrix, float s)
 {
     // Create list with points for this camera
-    Matrix C(4,10);
+    libviso2_Matrix C(4,10);
     C._val[0][0] = -0.5*s; C._val[1][0] = -0.5*s; C._val[2][0] = +1.0*s;
     C._val[0][1] = +0.5*s; C._val[1][1] = -0.5*s; C._val[2][1] = +1.0*s;
     C._val[0][2] = +0.5*s; C._val[1][2] = +0.5*s; C._val[2][2] = +1.0*s;
@@ -62,7 +62,7 @@ void ModelPainting::AddCamera(Matrix HomographyMatrix, float s)
     }
 
     // add camera to list of cameras
-    Matrix C_ref = HomographyMatrix*C;
+    libviso2_Matrix C_ref = HomographyMatrix*C;
     Camera cam;
     for (int32_t i=0; i<10; i++)
     {
@@ -109,7 +109,7 @@ void ModelPainting::AddPoints(std::vector<Point3D> p)
     updateGL();
 }
 
-void ModelPainting::FollowCamera(Matrix H)
+void ModelPainting::FollowCamera(libviso2_Matrix H)
 {
     if(m_followCamFlag)
     {
@@ -278,9 +278,9 @@ void ModelPainting::mouseMoveEvent(QMouseEvent *event)
         float rx = rotx2*M_PI/180.0;
         float ry = m_currPose.roty*M_PI/180.0;
 
-        Matrix R = Matrix::rotMatY(-ry)*Matrix::rotMatX(-rx);
+        libviso2_Matrix R = libviso2_Matrix::rotMatY(-ry)*libviso2_Matrix::rotMatX(-rx);
 
-        Matrix v(3,1);
+        libviso2_Matrix v(3,1);
         v._val[0][0] = dx;
         v._val[1][0] = dy;
 
@@ -326,9 +326,9 @@ void ModelPainting::keyPressEvent(QKeyEvent *event)
     float rx = rotx2*M_PI/180.0;
     float ry = m_currPose.roty*M_PI/180.0;
 
-    Matrix R = Matrix::rotMatY(-ry)*Matrix::rotMatX(-rx);
+    libviso2_Matrix R = libviso2_Matrix::rotMatY(-ry)*libviso2_Matrix::rotMatX(-rx);
 
-    Matrix v(3,1);
+    libviso2_Matrix v(3,1);
     v._val[0][0] = dx;
     v._val[1][0] = dy;
 

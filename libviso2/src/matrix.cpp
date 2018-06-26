@@ -37,7 +37,7 @@ static int32_t iminarg1,iminarg2;
 
 using namespace std;
 
-Matrix::Matrix()
+libviso2_Matrix::libviso2_Matrix()
 {
     _m   = 0;
     _n   = 0;
@@ -46,14 +46,14 @@ Matrix::Matrix()
 
 //==============================================================================//
 
-Matrix::Matrix(const int32_t m,const int32_t n)
+libviso2_Matrix::libviso2_Matrix(const int32_t m,const int32_t n)
 {
     allocateMemory(m, n);
 }
 
 //==============================================================================//
 
-Matrix::Matrix(const int32_t m,const int32_t n,const FLOAT* val)
+libviso2_Matrix::libviso2_Matrix(const int32_t m,const int32_t n,const FLOAT* val)
 {
     allocateMemory(m,n);
     int32_t k=0;
@@ -68,7 +68,7 @@ Matrix::Matrix(const int32_t m,const int32_t n,const FLOAT* val)
 
 //==============================================================================//
 
-Matrix::Matrix(const Matrix &M)
+libviso2_Matrix::libviso2_Matrix(const libviso2_Matrix &M)
 {
     allocateMemory(M._m,M._n);
     for (int32_t i=0; i<M._m; i++)
@@ -79,14 +79,14 @@ Matrix::Matrix(const Matrix &M)
 
 //==============================================================================//
 
-Matrix::~Matrix()
+libviso2_Matrix::~libviso2_Matrix()
 {
     releaseMemory();
 }
 
 //==============================================================================//
 
-Matrix& Matrix::operator=(const Matrix &M)
+libviso2_Matrix& libviso2_Matrix::operator=(const libviso2_Matrix &M)
 {
     if (this!=&M)
     {
@@ -108,7 +108,7 @@ Matrix& Matrix::operator=(const Matrix &M)
 
 //==============================================================================//
 
-void Matrix::getData(FLOAT* val_,int32_t i1,int32_t j1,int32_t i2,int32_t j2)
+void libviso2_Matrix::getData(FLOAT* val_,int32_t i1,int32_t j1,int32_t i2,int32_t j2)
 {
     if (i2==-1) i2 = _m-1;
     if (j2==-1) j2 = _n-1;
@@ -124,18 +124,18 @@ void Matrix::getData(FLOAT* val_,int32_t i1,int32_t j1,int32_t i2,int32_t j2)
 
 //==============================================================================//
 
-Matrix Matrix::getMat(int32_t i1,int32_t j1,int32_t i2,int32_t j2)
+libviso2_Matrix libviso2_Matrix::getMat(int32_t i1,int32_t j1,int32_t i2,int32_t j2)
 {
     if (i2==-1) i2 = _m-1;
     if (j2==-1) j2 = _n-1;
     if (i1<0 || i2>=_m || j1<0 || j2>=_n || i2<i1 || j2<j1)
     {
-        cerr << "ERROR: Cannot get submatrix [" << i1 << ".." << i2 <<
+        cerr << "ERROR: Cannot get sublibviso2_Matrix [" << i1 << ".." << i2 <<
             "] x [" << j1 << ".." << j2 << "]" <<
-            " of a (" << _m << "x" << _n << ") matrix." << endl;
+            " of a (" << _m << "x" << _n << ") libviso2_Matrix." << endl;
         exit(0);
     }
-    Matrix M(i2-i1+1,j2-j1+1);
+    libviso2_Matrix M(i2-i1+1,j2-j1+1);
     for (int32_t i=0; i<M._m; i++)
     {
         for (int32_t j=0; j<M._n; j++)
@@ -148,13 +148,13 @@ Matrix Matrix::getMat(int32_t i1,int32_t j1,int32_t i2,int32_t j2)
 
 //==============================================================================//
 
-void Matrix::setMat(const Matrix &M,const int32_t i1,const int32_t j1)
+void libviso2_Matrix::setMat(const libviso2_Matrix &M,const int32_t i1,const int32_t j1)
 {
     if (i1<0 || j1<0 || i1+M._m>_m || j1+M._n>_n)
     {
-        cerr << "ERROR: Cannot set submatrix [" << i1 << ".." << i1+M._m-1 <<
+        cerr << "ERROR: Cannot set sublibviso2_Matrix [" << i1 << ".." << i1+M._m-1 <<
             "] x [" << j1 << ".." << j1+M._n-1 << "]" <<
-            " of a (" << _m << "x" << _n << ") matrix." << endl;
+            " of a (" << _m << "x" << _n << ") libviso2_Matrix." << endl;
         exit(0);
     }
     for (int32_t i=0; i<M._m; i++)
@@ -168,7 +168,7 @@ void Matrix::setMat(const Matrix &M,const int32_t i1,const int32_t j1)
 
 //==============================================================================//
 
-void Matrix::setVal(FLOAT s,int32_t i1,int32_t j1,int32_t i2,int32_t j2)
+void libviso2_Matrix::setVal(FLOAT s,int32_t i1,int32_t j1,int32_t i2,int32_t j2)
 {
     if (i2==-1) i2 = _m-1;
     if (j2==-1) j2 = _n-1;
@@ -188,7 +188,7 @@ void Matrix::setVal(FLOAT s,int32_t i1,int32_t j1,int32_t i2,int32_t j2)
 
 //==============================================================================//
 
-void Matrix::setDiag(FLOAT s,int32_t i1,int32_t i2)
+void libviso2_Matrix::setDiag(FLOAT s,int32_t i1,int32_t i2)
 {
     if (i2==-1) i2 = min(_m-1,_n-1);
 
@@ -200,16 +200,16 @@ void Matrix::setDiag(FLOAT s,int32_t i1,int32_t i2)
 
 //==============================================================================//
 
-void Matrix::zero()
+void libviso2_Matrix::zero()
 {
     setVal(0);
 }
 
 //==============================================================================//
 
-Matrix Matrix::extractCols(vector<int> idx)
+libviso2_Matrix libviso2_Matrix::extractCols(vector<int> idx)
 {
-    Matrix M(_m,idx.size());
+    libviso2_Matrix M(_m,idx.size());
     for (int32_t j=0; j<M._n; j++)
     {
         if (idx[j]<_n)
@@ -225,9 +225,9 @@ Matrix Matrix::extractCols(vector<int> idx)
 
 //==============================================================================//
 
-Matrix Matrix::eye(const int32_t _m)
+libviso2_Matrix libviso2_Matrix::eye(const int32_t _m)
 {
-    Matrix M(_m,_m);
+    libviso2_Matrix M(_m,_m);
     for (int32_t i=0; i<_m; i++)
     {
         M._val[i][i] = 1;
@@ -237,7 +237,7 @@ Matrix Matrix::eye(const int32_t _m)
 
 //==============================================================================//
 
-void Matrix::eye()
+void libviso2_Matrix::eye()
 {
     for (int32_t i=0; i<_m; i++)
     {
@@ -254,11 +254,11 @@ void Matrix::eye()
 
 //==============================================================================//
 
-Matrix Matrix::diag(const Matrix &M)
+libviso2_Matrix libviso2_Matrix::diag(const libviso2_Matrix &M)
 {
     if (M._m>1 && M._n==1)
     {
-        Matrix D(M._m,M._m);
+        libviso2_Matrix D(M._m,M._m);
         for (int32_t i=0; i<M._m; i++)
         {
             D._val[i][i] = M._val[i][0];
@@ -267,28 +267,28 @@ Matrix Matrix::diag(const Matrix &M)
     }
     else if (M._m==1 && M._n>1)
     {
-        Matrix D(M._n,M._n);
+        libviso2_Matrix D(M._n,M._n);
         for (int32_t i=0; i<M._n; i++)
         {
             D._val[i][i] = M._val[0][i];
         }
         return D;
     }
-    cout << "ERROR: Trying to create diagonal matrix from vector of size (" << M._m << "x" << M._n << ")" << endl;
+    cout << "ERROR: Trying to create diagonal libviso2_Matrix from vector of size (" << M._m << "x" << M._n << ")" << endl;
     exit(0);
 }
 
 //==============================================================================//
 
-Matrix Matrix::reshape(const Matrix &M,int32_t m_,int32_t n_)
+libviso2_Matrix libviso2_Matrix::reshape(const libviso2_Matrix &M,int32_t m_,int32_t n_)
 {
     if (M._m*M._n != m_*n_)
     {
-        cerr << "ERROR: Trying to reshape a matrix of size (" << M._m << "x" << M._n <<
+        cerr << "ERROR: Trying to reshape a libviso2_Matrix of size (" << M._m << "x" << M._n <<
                 ") to size (" << m_ << "x" << n_ << ")" << endl;
         exit(0);
     }
-    Matrix M2(m_,n_);
+    libviso2_Matrix M2(m_,n_);
     for (int32_t k=0; k<m_*n_; k++)
     {
         int32_t i1 = k/M._n;
@@ -302,11 +302,11 @@ Matrix Matrix::reshape(const Matrix &M,int32_t m_,int32_t n_)
 
 //==============================================================================//
 
-Matrix Matrix::rotMatX(const FLOAT &angle)
+libviso2_Matrix libviso2_Matrix::rotMatX(const FLOAT &angle)
 {
     FLOAT s = sin(angle);
     FLOAT c = cos(angle);
-    Matrix R(3,3);
+    libviso2_Matrix R(3,3);
     R._val[0][0] = +1;
     R._val[1][1] = +c;
     R._val[1][2] = -s;
@@ -317,11 +317,11 @@ Matrix Matrix::rotMatX(const FLOAT &angle)
 
 //==============================================================================//
 
-Matrix Matrix::rotMatY(const FLOAT &angle)
+libviso2_Matrix libviso2_Matrix::rotMatY(const FLOAT &angle)
 {
     FLOAT s = sin(angle);
     FLOAT c = cos(angle);
-    Matrix R(3,3);
+    libviso2_Matrix R(3,3);
     R._val[0][0] = +c;
     R._val[0][2] = +s;
     R._val[1][1] = +1;
@@ -332,11 +332,11 @@ Matrix Matrix::rotMatY(const FLOAT &angle)
 
 //==============================================================================//
 
-Matrix Matrix::rotMatZ(const FLOAT &angle)
+libviso2_Matrix libviso2_Matrix::rotMatZ(const FLOAT &angle)
 {
     FLOAT s = sin(angle);
     FLOAT c = cos(angle);
-    Matrix R(3,3);
+    libviso2_Matrix R(3,3);
     R._val[0][0] = +c;
     R._val[0][1] = -s;
     R._val[1][0] = +s;
@@ -347,17 +347,17 @@ Matrix Matrix::rotMatZ(const FLOAT &angle)
 
 //==============================================================================//
 
-Matrix Matrix::operator+(const Matrix &M)
+libviso2_Matrix libviso2_Matrix::operator+(const libviso2_Matrix &M)
 {
-    const Matrix &A = *this;
-    const Matrix &B = M;
+    const libviso2_Matrix &A = *this;
+    const libviso2_Matrix &B = M;
     if (A._m!=B._m || A._n!=B._n)
     {
         cerr << "ERROR: Trying to add matrices of size (" << A._m << "x" << A._n <<
             ") and (" << B._m << "x" << B._n << ")" << endl;
         exit(0);
     }
-    Matrix C(A._m,A._n);
+    libviso2_Matrix C(A._m,A._n);
     for (int32_t i=0; i<_m; i++)
     {
         for (int32_t j=0; j<_n; j++)
@@ -370,17 +370,17 @@ Matrix Matrix::operator+(const Matrix &M)
 
 //==============================================================================//
 
-Matrix Matrix::operator-(const Matrix &M)
+libviso2_Matrix libviso2_Matrix::operator-(const libviso2_Matrix &M)
 {
-    const Matrix &A = *this;
-    const Matrix &B = M;
+    const libviso2_Matrix &A = *this;
+    const libviso2_Matrix &B = M;
     if (A._m!=B._m || A._n!=B._n)
     {
         cerr << "ERROR: Trying to subtract matrices of size (" << A._m << "x" << A._n <<
             ") and (" << B._m << "x" << B._n << ")" << endl;
         exit(0);
     }
-    Matrix C(A._m,A._n);
+    libviso2_Matrix C(A._m,A._n);
     for (int32_t i=0; i<_m; i++)
     {
         for (int32_t j=0; j<_n; j++)
@@ -393,17 +393,17 @@ Matrix Matrix::operator-(const Matrix &M)
 
 //==============================================================================//
 
-Matrix Matrix::operator*(const Matrix &M)
+libviso2_Matrix libviso2_Matrix::operator*(const libviso2_Matrix &M)
 {
-    const Matrix &A = *this;
-    const Matrix &B = M;
+    const libviso2_Matrix &A = *this;
+    const libviso2_Matrix &B = M;
     if (A._n!=B._m)
     {
         cerr << "ERROR: Trying to multiply matrices of size (" << A._m << "x" << A._n <<
             ") and (" << B._m << "x" << B._n << ")" << endl;
         exit(0);
     }
-    Matrix C(A._m,B._n);
+    libviso2_Matrix C(A._m,B._n);
     for (int32_t i=0; i<A._m; i++)
     {
         for (int32_t j=0; j<B._n; j++)
@@ -419,9 +419,9 @@ Matrix Matrix::operator*(const Matrix &M)
 
 //==============================================================================//
 
-Matrix Matrix::operator*(const FLOAT &s)
+libviso2_Matrix libviso2_Matrix::operator*(const FLOAT &s)
 {
-    Matrix C(_m,_n);
+    libviso2_Matrix C(_m,_n);
     for (int32_t i=0; i<_m; i++)
     {
         for (int32_t j=0; j<_n; j++)
@@ -434,14 +434,14 @@ Matrix Matrix::operator*(const FLOAT &s)
 
 //==============================================================================//
 
-Matrix Matrix::operator/(const Matrix &M)
+libviso2_Matrix libviso2_Matrix::operator/(const libviso2_Matrix &M)
 {
-    const Matrix &A = *this;
-    const Matrix &B = M;
+    const libviso2_Matrix &A = *this;
+    const libviso2_Matrix &B = M;
 
     if (A._m==B._m && A._n==B._n)
     {
-        Matrix C(A._m,A._n);
+        libviso2_Matrix C(A._m,A._n);
         for (int32_t i=0; i<A._m; i++)
         {
             for (int32_t j=0; j<A._n; j++)
@@ -456,7 +456,7 @@ Matrix Matrix::operator/(const Matrix &M)
     }
     else if (A._m==B._m && B._n==1)
     {
-        Matrix C(A._m,A._n);
+        libviso2_Matrix C(A._m,A._n);
         for (int32_t i=0; i<A._m; i++)
         {
             for (int32_t j=0; j<A._n; j++)
@@ -471,7 +471,7 @@ Matrix Matrix::operator/(const Matrix &M)
     }
     else if (A._n==B._n && B._m==1)
     {
-        Matrix C(A._m,A._n);
+        libviso2_Matrix C(A._m,A._n);
         for (int32_t i=0; i<A._m; i++)
         {
             for (int32_t j=0; j<A._n; j++)
@@ -494,14 +494,14 @@ Matrix Matrix::operator/(const Matrix &M)
 
 //==============================================================================//
 
-Matrix Matrix::operator/(const FLOAT &s)
+libviso2_Matrix libviso2_Matrix::operator/(const FLOAT &s)
 {
     if (fabs(s)<1e-20)
     {
         cerr << "ERROR: Trying to divide by zero!" << endl;
         exit(0);
     }
-    Matrix C(_m,_n);
+    libviso2_Matrix C(_m,_n);
     for (int32_t i=0; i<_m; i++)
     {
         for (int32_t j=0; j<_n; j++)
@@ -514,9 +514,9 @@ Matrix Matrix::operator/(const FLOAT &s)
 
 //==============================================================================//
 
-Matrix Matrix::operator-()
+libviso2_Matrix libviso2_Matrix::operator-()
 {
-    Matrix C(_m,_n);
+    libviso2_Matrix C(_m,_n);
     for (int32_t i=0; i<_m; i++)
     {
         for (int32_t j=0; j<_n; j++)
@@ -529,9 +529,9 @@ Matrix Matrix::operator-()
 
 //==============================================================================//
 
-Matrix Matrix::operator~()
+libviso2_Matrix libviso2_Matrix::operator~()
 {
-    Matrix C(_n,_m);
+    libviso2_Matrix C(_n,_m);
     for (int32_t i=0; i<_m; i++)
     {
         for (int32_t j=0; j<_n; j++)
@@ -544,7 +544,7 @@ Matrix Matrix::operator~()
 
 //==============================================================================//
 
-FLOAT Matrix::l2norm()
+FLOAT libviso2_Matrix::l2norm()
 {
     FLOAT norm = 0;
     for (int32_t i=0; i<_m; i++)
@@ -559,7 +559,7 @@ FLOAT Matrix::l2norm()
 
 //==============================================================================//
 
-FLOAT Matrix::mean()
+FLOAT libviso2_Matrix::mean()
 {
     FLOAT mean = 0;
     for (int32_t i=0; i<_m; i++)
@@ -574,14 +574,14 @@ FLOAT Matrix::mean()
 
 //==============================================================================//
 
-Matrix Matrix::cross(const Matrix &a, const Matrix &b)
+libviso2_Matrix libviso2_Matrix::cross(const libviso2_Matrix &a, const libviso2_Matrix &b)
 {
     if (a._m!=3 || a._n!=1 || b._m!=3 || b._n!=1)
     {
         cerr << "ERROR: Cross product vectors must be of size (3x1)" << endl;
         exit(0);
     }
-    Matrix c(3,1);
+    libviso2_Matrix c(3,1);
     c._val[0][0] = a._val[1][0]*b._val[2][0]-a._val[2][0]*b._val[1][0];
     c._val[1][0] = a._val[2][0]*b._val[0][0]-a._val[0][0]*b._val[2][0];
     c._val[2][0] = a._val[0][0]*b._val[1][0]-a._val[1][0]*b._val[0][0];
@@ -590,29 +590,29 @@ Matrix Matrix::cross(const Matrix &a, const Matrix &b)
 
 //==============================================================================//
 
-Matrix Matrix::inv(const Matrix &M)
+libviso2_Matrix libviso2_Matrix::inv(const libviso2_Matrix &M)
 {
     if (M._m!=M._n)
     {
-        cerr << "ERROR: Trying to invert matrix of size (" << M._m << "x" << M._n << ")" << endl;
+        cerr << "ERROR: Trying to invert libviso2_Matrix of size (" << M._m << "x" << M._n << ")" << endl;
         exit(0);
     }
-    Matrix A(M);
-    Matrix B = eye(M._m);
+    libviso2_Matrix A(M);
+    libviso2_Matrix B = eye(M._m);
     B.solve(A);
     return B;
 }
 
 //==============================================================================//
 
-bool Matrix::inv()
+bool libviso2_Matrix::inv()
 {
     if (_m!=_n)
     {
-        cerr << "ERROR: Trying to invert matrix of size (" << _m << "x" << _n << ")" << endl;
+        cerr << "ERROR: Trying to invert libviso2_Matrix of size (" << _m << "x" << _n << ")" << endl;
         exit(0);
     }
-    Matrix A(*this);
+    libviso2_Matrix A(*this);
     eye();
     solve(A);
     return true;
@@ -620,15 +620,15 @@ bool Matrix::inv()
 
 //==============================================================================//
 
-FLOAT Matrix::det()
+FLOAT libviso2_Matrix::det()
 {
     if (_m != _n)
     {
-        cerr << "ERROR: Trying to compute determinant of a matrix of size (" << _m << "x" << _n << ")" << endl;
+        cerr << "ERROR: Trying to compute determinant of a libviso2_Matrix of size (" << _m << "x" << _n << ")" << endl;
         exit(0);
     }
 
-    Matrix A(*this);
+    libviso2_Matrix A(*this);
     int32_t *idx = (int32_t*)malloc(_m*sizeof(int32_t));
     FLOAT d = 1;
     A.lu(idx,d);
@@ -642,11 +642,11 @@ FLOAT Matrix::det()
 
 //==============================================================================//
 
-bool Matrix::solve(const Matrix &M, FLOAT eps)
+bool libviso2_Matrix::solve(const libviso2_Matrix &M, FLOAT eps)
 {
     // substitutes
-    const Matrix &A = M;
-    Matrix &B       = *this;
+    const libviso2_Matrix &A = M;
+    libviso2_Matrix &B       = *this;
 
     if (A._m != A._n || A._m != B._m || A._m<1 || B._n<1)
     {
@@ -756,18 +756,18 @@ bool Matrix::solve(const Matrix &M, FLOAT eps)
 
 //==============================================================================//
 
-// Given a matrix a[1.._n][1.._n], this routine replaces it by the LU decomposition of a rowwise
+// Given a libviso2_Matrix a[1.._n][1.._n], this routine replaces it by the LU decomposition of a rowwise
 // permutation of itself. a and _n are input. a is output, arranged as in equation (2.3.14) above;
 // indx[1.._n] is an output vector that records the row permutation effected by the partial
 // pivoting; d is output as ±1 depending on whether the number of row interchanges was even
 // or odd, respectively. This routine is used in combination with lubksb to solve linear equations
-// or invert a matrix.
+// or invert a libviso2_Matrix.
 
-bool Matrix::lu(int32_t *idx, FLOAT &d)//, FLOAT eps)
+bool libviso2_Matrix::lu(int32_t *idx, FLOAT &d)//, FLOAT eps)
 {
     if (_m != _n)
     {
-        cerr << "ERROR: Trying to LU decompose a matrix of size (" << _m << "x" << _n << ")" << endl;
+        cerr << "ERROR: Trying to LU decompose a libviso2_Matrix of size (" << _m << "x" << _n << ")" << endl;
         exit(0);
     }
 
@@ -861,14 +861,14 @@ bool Matrix::lu(int32_t *idx, FLOAT &d)//, FLOAT eps)
 
 //==============================================================================//
 
-// Given a matrix M/A[1.._m][1.._n], this routine computes its singular value decomposition, M/A =
-// U·W·V T. Thematrix U replaces a on output. The diagonal matrix of singular values W is output
-// as a vector w[1.._n]. Thematrix V (not the transpose V T ) is output as v[1.._n][1.._n].
-void Matrix::svd(Matrix &U2,Matrix &W,Matrix &V)
+// Given a libviso2_Matrix M/A[1.._m][1.._n], this routine computes its singular value decomposition, M/A =
+// U·W·V T. Thelibviso2_Matrix U replaces a on output. The diagonal libviso2_Matrix of singular values W is output
+// as a vector w[1.._n]. Thelibviso2_Matrix V (not the transpose V T ) is output as v[1.._n][1.._n].
+void libviso2_Matrix::svd(libviso2_Matrix &U2,libviso2_Matrix &W,libviso2_Matrix &V)
 {
-    Matrix U = Matrix(*this);
-    U2 = Matrix(_m,_m);
-    V  = Matrix(_n,_n);
+    libviso2_Matrix U = libviso2_Matrix(*this);
+    U2 = libviso2_Matrix(_m,_m);
+    V  = libviso2_Matrix(_n,_n);
 
     FLOAT* w   = (FLOAT*)malloc(_n*sizeof(FLOAT));
     FLOAT* rv1 = (FLOAT*)malloc(_n*sizeof(FLOAT));
@@ -1137,9 +1137,9 @@ void Matrix::svd(Matrix &U2,Matrix &W,Matrix &V)
     }
 
     // create vector and copy singular values
-    W = Matrix(min(_m,_n),1,w);
+    W = libviso2_Matrix(min(_m,_n),1,w);
 
-    // extract mxm submatrix U
+    // extract mxm sublibviso2_Matrix U
     U2.setMat(U.getMat(0,0,_m-1,min(_m-1,_n-1)),0,0);
 
     // release temporary memory
@@ -1151,11 +1151,11 @@ void Matrix::svd(Matrix &U2,Matrix &W,Matrix &V)
 
 //==============================================================================//
 
-ostream& operator<<(ostream& out,const Matrix& M)
+ostream& operator<<(ostream& out,const libviso2_Matrix& M)
 {
     if (M._m==0 || M._n==0)
     {
-        out << "[empty matrix]";
+        out << "[empty libviso2_Matrix]";
     }
     else
     {
@@ -1178,7 +1178,7 @@ ostream& operator<<(ostream& out,const Matrix& M)
 
 //==============================================================================//
 
-void Matrix::allocateMemory(const int32_t m, const int32_t n)
+void libviso2_Matrix::allocateMemory(const int32_t m, const int32_t n)
 {
     _m = abs(m); _n = abs(n);
     if (_m==0 || _n==0)
@@ -1196,7 +1196,7 @@ void Matrix::allocateMemory(const int32_t m, const int32_t n)
 
 //==============================================================================//
 
-void Matrix::releaseMemory()
+void libviso2_Matrix::releaseMemory()
 {
     if (_val!=0)
     {
@@ -1207,7 +1207,7 @@ void Matrix::releaseMemory()
 
 //==============================================================================//
 
-FLOAT Matrix::pythag(FLOAT a,FLOAT b)
+FLOAT libviso2_Matrix::pythag(FLOAT a,FLOAT b)
 {
     FLOAT absa,absb;
     absa = fabs(a);
