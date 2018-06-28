@@ -3,10 +3,10 @@
 using namespace std;
 
 //DRAWING_POINT_SIZE means the size of the painting points
-#define DRAWING_POINT_SIZE 1
+#define DRAWING_POINT_SIZE 0.7
 //LIMIT_NUM_OF_FARME means how much frame would be kept.
 //TODO: make it can be changed in the main window.
-#define LIMIT_NUM_OF_FARME 10
+#define LIMIT_NUM_OF_FARME 350
 
 ModelPainting::ModelPainting(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers),parent)
@@ -18,7 +18,7 @@ ModelPainting::ModelPainting(QWidget *parent)
     m_currPose.ty   = 0;
     m_currPose.tz   = -1.5;
     m_backgroundFlag = true;
-    m_showCamFlag = false;
+    m_showCamFlag = true;
     m_followCamFlag = true;
 }
 
@@ -143,9 +143,18 @@ void ModelPainting::DelPose()
     std::cout << "Delete a pose, exsiting poses number: " << m_poses.size() << std::endl;
 }
 
-void ModelPainting::PlayPoses()
+void ModelPainting::PlayPoses(bool saveVideo)
 {
-    float step_size = 0.04;
+    string dir;
+    int system_status = 0;
+    if(saveVideo)
+    {
+        dir = createNewRecordDirectory();
+        std::cout << "Saving .png files. " << std::endl;
+    }
+    float step_size = 0.02;
+    int k1=0;
+    //int k2=0;
     for (int i=0; i<(int)m_poses.size()-1; i++)
     {
         Pose pose1 = m_poses[i];
@@ -160,9 +169,47 @@ void ModelPainting::PlayPoses()
             m_currPose.ty   = pose1.ty  +(pose2.ty  -pose1.ty  )*pos2;
             m_currPose.tz   = pose1.tz  +(pose2.tz  -pose1.tz  )*pos2;
             updateGL();
+            if(saveVideo)
+            {
+                QImage img = this->grabFrameBuffer();
+                char filename[1024];
+                sprintf(filename,"%s%06d.png",dir.c_str(),k1++);
+                //std::cout << "Storing " << filename << std::endl;
+                img.save(QString(filename));
+            }
         }
     }
+    if(saveVideo)
+    {
+        std::cout << "Save .png files finished. " << std::endl;
+        char command[1024];
+        sprintf(command,"gnome-terminal -e /home/dadaoii/real_time_mapper/convert2video.sh");
+        system_status = system(command);
+        if( system_status ) {};
+    }
 }
+
+string ModelPainting::createNewRecordDirectory()
+{
+
+    char buffer[1024];
+    int system_status = 0;
+    sprintf(buffer,"/home/dadaoii/mapper_dataset/PngFiles/");
+    std::cout << "Creating record directory: " << buffer << std::endl;
+    char cmd1[1024];
+    char cmd2[1024];
+    sprintf(cmd1,"rm -r %s",buffer);
+    sprintf(cmd2,"mkdir %s",buffer);
+    // Do nothing. Just for resolving the warning message.
+    system_status =system(cmd1);
+    if( system_status ) {};
+    system_status = system(cmd2);
+    if( system_status ) {};
+
+    return buffer;
+
+}
+
 
 //=============================================================================//
 //===========================GL painting=======================================//

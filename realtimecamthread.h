@@ -56,6 +56,7 @@ public:
     void PickedUpNewCamImage() { m_pickedNewCamImage = true; }
     void SetRemapFlag() {m_remapFlag = true;}
     void SetReconstructionFlag() {m_reconstructionFlag = true;}
+    void StopRealTimeRecon() {m_reconstructionFlag = false;}
     bool CheckRemapFlagStatus() {return m_remapFlag;}
     bool CheckCalibFlagStatus() {return m_calibFlag;}
     void CloseCamera() { close_img_viewer = true; }

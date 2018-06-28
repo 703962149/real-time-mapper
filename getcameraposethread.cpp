@@ -93,7 +93,7 @@ void GetCameraPoseThread::run()
     if(!m_poseFileStatus)
     {
         //std::cout<<"Can get the pose information, running the VO from LibVISO2."<<std::endl;
-
+/*
         int32_t dim[3] = {0};
         dim[0] = m_stereoImage->width;
         dim[1] = m_stereoImage->height;
@@ -115,8 +115,8 @@ void GetCameraPoseThread::run()
             emit DetectNewCameraPose();
             while (!m_pickedNewCamPose) usleep(1000);
         }
+*/
 
-/*
         //orbslam2
         libviso2_Matrix tempM = libviso2_Matrix::eye(4);
 
@@ -142,7 +142,7 @@ void GetCameraPoseThread::run()
         m_pickedNewCamPose = false;
         emit DetectNewCameraPose();
         while (!m_pickedNewCamPose) usleep(1000);
-*/
+
     }
     else if (m_calib->CheckRunDataType() == m_calib->DADAO_DATASET_FLAG)
     {

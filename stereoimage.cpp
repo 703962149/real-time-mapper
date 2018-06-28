@@ -27,10 +27,33 @@ StereoImage::~StereoImage()
 bool StereoImage::GetDadaoTimesAndPoses(string DadaoCamticsFilePath)
 {
     std::vector<float> tempVec;
-    m_numOfDadaoImage = 0;
+    m_numOfDadaoImage = -1;
+    const char *path=DadaoCamticsFilePath.c_str();
+    ifstream fin(path, ios::in);
+    float data;
+    while(fin)
+    {
+        fin >> data;
+        tempVec.push_back(data);
+        fin >> data;
+        tempVec.push_back(data);
+        fin >> data;
+        tempVec.push_back(data);
+        fin >> data;
+        tempVec.push_back(data);
+        fin >> data;
+        tempVec.push_back(data);
+
+        m_numOfDadaoImage++;
+        m_dadaoCapturedTime.push_back(tempVec[1]);
+        m_dadaoPoses.push_back(tempVec);
+        tempVec.clear();
+    }
+    fin.close();
+
+    /*
     char line[1000];
     FILE * pFile;
-    const char *path=DadaoCamticsFilePath.c_str();
     pFile = fopen (path,"r");
     if (NULL == pFile)
     {
@@ -62,6 +85,7 @@ bool StereoImage::GetDadaoTimesAndPoses(string DadaoCamticsFilePath)
         }
         fclose (pFile);
     }
+    */
 
     std::cout<<"Read file 'CamTics.txt' success."<<std::endl;
     return true;

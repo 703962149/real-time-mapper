@@ -150,8 +150,8 @@ void RealTimeCamThread::run()
 
     while(!close_img_viewer)
     {
-
-        visensor_imudata paired_imu=visensor_get_stereoImg((char *)img_left.data,(char *)img_right.data,left_stamp,right_stamp);
+        //here will report a warning. cuz the function will get a struct but i do not need it.(a part of loitor)
+        visensor_imudata paired_imu = visensor_get_stereoImg((char *)img_left.data,(char *)img_right.data,left_stamp,right_stamp);
 
         //bug
         QImage tempLeftQImage(img_left.cols, img_left.rows, QImage::Format_Indexed8);
@@ -217,9 +217,6 @@ void RealTimeCamThread::run()
             m_remapLeftImage = RtempLeftQImage;
             m_remapRightImage = RtempRightQImage;
 
-            //double capturedTime = left_stamp.tv_sec%1000+(left_stamp.tv_usec*0.000001);
-            //cv::Mat poseMatrix = m_slam->TrackStereo(img_tempL,img_tempR,capturedTime);
-            //m_stereo->SetOrbPose(poseMatrix);
             //std::cout<<poseMatrix<<std::endl;
             //m_slam->TrackStereo(img_tempL,img_tempR,capturedTime);
             //m_stereo->SetOrbPose(m_slam->SaveTrajectoryKITTI());
@@ -228,6 +225,10 @@ void RealTimeCamThread::run()
 
             if(m_reconstructionFlag)
             {
+                double capturedTime = left_stamp.tv_sec%1000+(left_stamp.tv_usec*0.000001);
+                cv::Mat poseMatrix = m_slam->TrackStereo(img_tempL,img_tempR,capturedTime);
+                m_stereo->SetOrbPose(poseMatrix);
+
                 if((left_stamp.tv_usec-right_stamp.tv_usec)<10)
                 {
                     double capturedTime = left_stamp.tv_sec%1000+(left_stamp.tv_usec*0.000001);
@@ -253,7 +254,7 @@ void RealTimeCamThread::run()
 
                     cvReleaseImage(&rectLeftIplImage);
                     cvReleaseImage(&rectRightIplImage);
-                    usleep(200000);
+                    //usleep(200000);
                 }
             }
         }

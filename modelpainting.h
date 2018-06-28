@@ -43,8 +43,9 @@ public:
 
     void AddPose();
     void DelPose();
-    void PlayPoses();
+    void PlayPoses(bool saveVideo);
 
+    std::string createNewRecordDirectory();
 
 protected:
 

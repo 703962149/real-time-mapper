@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.6.2, 2018-06-26T17:51:20. -->
+<!-- Written by QtCreator 4.6.2, 2018-06-28T11:28:26. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -246,7 +246,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/dadaoii/real_time_mapper/real_time_mapper.pro</value>
     <value type="bool" key="QmakeProjectManager.QmakeRunConfiguration.UseLibrarySearchPath">true</value>
-    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments">/home/dadaoii/orbslam2/Vocabulary/ORBvoc.txt /home/dadaoii/orbslam2/Examples/Stereo/EuRoC.yaml </value>
+    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments">/home/dadaoii/orbslam2/Vocabulary/ORBvoc.txt /home/dadaoii/orbslam2/Examples/ROS/ORB_SLAM2/EuRoC.yaml </value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.ProFile">real_time_mapper.pro</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix">false</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory"></value>

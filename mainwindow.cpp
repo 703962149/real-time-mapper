@@ -61,13 +61,12 @@ void MainWindow::on_DeletePoseButton_clicked()
 
 void MainWindow::on_ShowPosesButton_clicked()
 {
-    ui->Model3D->PlayPoses();
+    ui->Model3D->PlayPoses(false);
 }
 
 void MainWindow::on_SaveVideoButton_clicked()
 {
-    //TODO: the funtion to save those added poses as a video.
-    std::cout<< "TODO: SaveVideo " << std::endl;
+    ui->Model3D->PlayPoses(true);
 }
 
 void MainWindow::on_LocalImageModeButton_clicked()
@@ -137,7 +136,11 @@ void MainWindow::on_RealTimeModeButton_clicked()
     }
     if (m_runningRealTimeModeFlag)
     {
+        m_realTimeCamThread->StopRealTimeRecon();
         m_runningRealTimeModeFlag = false;
+        m_getPoseThread->terminate();
+        m_3dReconstructionThread->terminate();
+        while (m_getPoseThread->isRunning()||m_3dReconstructionThread->isRunning());
     }
     else
     {
@@ -188,9 +191,9 @@ void MainWindow::on_ReadCalibOfRealTimeModeButton_clicked()
         //m_calib->GetLoitorCalibParam("/home/dadaoii/orbslam2/Examples/ROS/ORB_SLAM2/EuRoC.yaml");
 
 
-        //QStringList arguments = qApp->arguments();
-        //m_slam = new ORB_SLAM2::System(qPrintable(arguments.at(1)),qPrintable(arguments.at(2)),ORB_SLAM2::System::STEREO,true);
-        //m_realTimeCamThread->GetORBSLAM(m_slam);
+        QStringList arguments = qApp->arguments();
+        m_slam = new ORB_SLAM2::System(qPrintable(arguments.at(1)),qPrintable(arguments.at(2)),ORB_SLAM2::System::STEREO,true);
+        m_realTimeCamThread->GetORBSLAM(m_slam);
     }
 }
 
