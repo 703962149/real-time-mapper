@@ -214,6 +214,17 @@ void MainWindow::on_ReconstructionButton_clicked()
     }
 }
 
+void MainWindow::on_ResetViewButton_clicked()
+{
+    ui->Model3D->ResetView();
+}
+
+void MainWindow::on_RecordCheckBox_clicked()
+{
+    ui->Model3D->createNewRecordDirectory();
+    ui->Model3D->SetRecordFlag(ui->RecordCheckBox->isChecked());
+}
+
 void MainWindow::on_ExitButton_clicked()
 {
     std::cout<< "Exit mapper " << std::endl;
@@ -317,6 +328,11 @@ void MainWindow::DetectNewMap()
     }
 
     m_3dReconstructionThread->PickupNewMap();
+
+    if(m_readLocalFileThread->CheckReadingStatus()&&ui->RecordCheckBox->isChecked())
+    {
+        ui->Model3D->ShowMap();
+    }
 }
 
 void MainWindow::DetectNewCamImage()

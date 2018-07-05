@@ -10,8 +10,8 @@ ReconstructionThread::ReconstructionThread(CalibrationParameters *calib, StereoI
     //it is the max map point distance
     //if any point is far from the camera over this number, it would not be shown
     //TODO: make it could be changed in the mainwindow
-    m_showingMinDistance = 1;
-    m_showingMaxDistance = 50;
+    m_showingMinDistance = 0.1;
+    m_showingMaxDistance = 25;
 
     if (m_calib->CheckRunDataType() == m_calib->DADAO_DATASET_FLAG)
     {

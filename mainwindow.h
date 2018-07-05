@@ -58,13 +58,14 @@ private slots:
     void on_ExitButton_clicked();
     void on_ReadCalibOfRealTimeModeButton_clicked();
     void on_ReconstructionButton_clicked();
+    void on_ResetViewButton_clicked();
+    void on_RecordCheckBox_clicked();
 
     void DetectNewCalibParam();
     void DetectNewStereoImage();
     void DetectNewCameraPose();
     void DetectNewMap();
     void DetectNewCamImage();
-
 };
 
 #endif // MAINWINDOW_H

@@ -3,7 +3,7 @@
 using namespace std;
 
 //DRAWING_POINT_SIZE means the size of the painting points
-#define DRAWING_POINT_SIZE 0.7
+#define DRAWING_POINT_SIZE 0.5
 //LIMIT_NUM_OF_FARME means how much frame would be kept.
 //TODO: make it can be changed in the main window.
 #define LIMIT_NUM_OF_FARME 350
@@ -11,15 +11,33 @@ using namespace std;
 ModelPainting::ModelPainting(QWidget *parent)
     : QGLWidget(QGLFormat(QGL::SampleBuffers),parent)
 {
-    m_currPose.zoom = -2;
+    m_currPose.zoom = -7;
     m_currPose.rotx = 180;
     m_currPose.roty = 0;
+    m_currPose.rotz = 0;
     m_currPose.tx   = 0;
     m_currPose.ty   = 0;
     m_currPose.tz   = -1.5;
+
+    m_prePose.zoom = -7;
+    m_prePose.rotx = 180;
+    m_prePose.roty = 0;
+    m_prePose.rotz = 0;
+    m_prePose.tx   = 0;
+    m_prePose.ty   = 0;
+    m_prePose.tz   = -1.5;
+
+    m_farestPose.tx = 0;
+    m_farestPose.ty = 10;
+    m_farestPose.tz = 0;
+
     m_backgroundFlag = true;
     m_showCamFlag = true;
     m_followCamFlag = true;
+    m_recordFlag = false;
+
+    m_countPoseFlag = 0;
+    m_recordNum = 0;
 }
 
 ModelPainting::~ModelPainting()
@@ -113,16 +131,124 @@ void ModelPainting::FollowCamera(libviso2_Matrix H)
 {
     if(m_followCamFlag)
     {
-        m_currPose.tx = -H._val[0][3];
-        m_currPose.ty = -H._val[1][3]+0.5;
-        m_currPose.tz = -H._val[2][3];
+        m_countPoseFlag++;
+        if(m_countPoseFlag%4 == 0)
+        {
+
+        Pose curPose;
+        curPose.tx = -H._val[0][3];
+        curPose.ty = -H._val[1][3]+1;
+        curPose.tz = -H._val[2][3];
+
+        //euler angle is connected to their rotation sequence
+        //https://www.learnopencv.com/rotation-matrix-to-euler-angles/
+        float sy = sqrt(H._val[0][0] * H._val[0][0] +  H._val[1][0] * H._val[1][0] );
+        bool singular = sy < 1e-6;
+        float x, y, z;
+        if (!singular)
+        {
+            x = atan2(H._val[2][1] , H._val[2][2]);
+            y = atan2(-H._val[2][0], sy);
+            z = atan2(H._val[1][0], H._val[0][0]);
+        }
+        else
+        {
+            x = atan2(-H._val[1][2], H._val[1][1]);
+            y = atan2(-H._val[2][0], sy);
+            z = 0;
+        }
+
+        curPose.rotx = -x*(180/M_PI)+190;
+        curPose.roty = -y*(180/M_PI);
+        curPose.rotz = -z*(180/M_PI);
+        curPose.zoom = -10;
+
+        float step_size = 0.1;
+        Pose pose1 = m_prePose;
+        Pose pose2 = curPose;
+
+        if(abs(curPose.tx)>abs(m_farestPose.tx))
+            m_farestPose.tx = curPose.tx;
+        if(abs(curPose.tz)>abs(m_farestPose.tz))
+            m_farestPose.tz = curPose.tz;
+
+        if(abs(pose1.rotx-pose2.rotx)>100)
+        {
+            pose1.rotx = pose2.rotx;
+            pose1.roty = pose2.roty;
+            pose1.rotz = pose2.rotz;
+            updateGL();
+        }
+
+        for (float pos=0; pos<=1; pos+=step_size)
+        {
+            float pos2 = (1+sin(-M_PI/2+pos*M_PI))/2;
+            m_currPose.zoom = pose1.zoom+(pose2.zoom-pose1.zoom)*pos2;
+            m_currPose.rotx = pose1.rotx+(pose2.rotx-pose1.rotx)*pos2;
+            m_currPose.roty = pose1.roty+(pose2.roty-pose1.roty)*pos2;
+            m_currPose.rotz = pose1.rotz+(pose2.rotz-pose1.rotz)*pos2;
+            m_currPose.tx   = pose1.tx  +(pose2.tx  -pose1.tx  )*pos2;
+            m_currPose.ty   = pose1.ty  +(pose2.ty  -pose1.ty  )*pos2;
+            m_currPose.tz   = pose1.tz  +(pose2.tz  -pose1.tz  )*pos2;
+            updateGL();
+            if(m_recordFlag)
+            {
+                QImage img = this->grabFrameBuffer();
+                char filename[1024];
+                sprintf(filename,"%s%06d.png",m_recordDirectory.c_str(),m_recordNum++);
+                img.save(QString(filename));
+            }
+        }
+        m_prePose = m_currPose;
+        }
     }
     updateGL();
 }
 
+void ModelPainting::ShowMap()
+{
+    m_farestPose.zoom = -200;
+    m_farestPose.rotx = 270;
+    m_farestPose.roty = 0;
+    m_farestPose.rotz = 0;
+    m_farestPose.ty = 10;
+
+    Pose pose1 = m_currPose;
+    Pose pose2 = m_farestPose;
+
+    float step_size = 0.05;
+    for (float pos=0; pos<=1; pos+=step_size)
+    {
+        float pos2 = (1+sin(-M_PI/2+pos*M_PI))/2;
+        m_currPose.zoom = pose1.zoom+(pose2.zoom-pose1.zoom)*pos2;
+        m_currPose.rotx = pose1.rotx+(pose2.rotx-pose1.rotx)*pos2;
+        m_currPose.roty = pose1.roty+(pose2.roty-pose1.roty)*pos2;
+        m_currPose.rotz = pose1.rotz+(pose2.rotz-pose1.rotz)*pos2;
+        m_currPose.tx   = pose1.tx  +(pose2.tx/2  -pose1.tx  )*pos2;
+        m_currPose.ty   = pose1.ty  +(pose2.ty  -pose1.ty  )*pos2;
+        m_currPose.tz   = pose1.tz  +(pose2.tz/2  -pose1.tz  )*pos2;
+        updateGL();
+        if(m_recordFlag)
+        {
+            QImage img = this->grabFrameBuffer();
+            char filename[1024];
+            sprintf(filename,"%s%06d.png",m_recordDirectory.c_str(),m_recordNum++);
+            img.save(QString(filename));
+        }
+    }
+    if(m_recordFlag)
+    {
+        std::cout << "Save .png files finished. " << std::endl;
+        char command[1024];
+        sprintf(command,"gnome-terminal -e /home/dadaoii/real_time_mapper/convert2video.sh");
+        int system_status = system(command);
+        if( system_status ) {};
+    }
+}
+
 void ModelPainting::ResetView()
 {
-    m_currPose.zoom = -5;
+    m_currPose.zoom = -7;
     m_currPose.rotx = 180;
     m_currPose.roty = 0;
     m_currPose.tx   = 0;
@@ -145,16 +271,13 @@ void ModelPainting::DelPose()
 
 void ModelPainting::PlayPoses(bool saveVideo)
 {
-    string dir;
     int system_status = 0;
     if(saveVideo)
     {
-        dir = createNewRecordDirectory();
-        std::cout << "Saving .png files. " << std::endl;
+        createNewRecordDirectory();
     }
     float step_size = 0.02;
-    int k1=0;
-    //int k2=0;
+    int num=0;
     for (int i=0; i<(int)m_poses.size()-1; i++)
     {
         Pose pose1 = m_poses[i];
@@ -173,8 +296,7 @@ void ModelPainting::PlayPoses(bool saveVideo)
             {
                 QImage img = this->grabFrameBuffer();
                 char filename[1024];
-                sprintf(filename,"%s%06d.png",dir.c_str(),k1++);
-                //std::cout << "Storing " << filename << std::endl;
+                sprintf(filename,"%s%06d.png",m_recordDirectory.c_str(),num++);
                 img.save(QString(filename));
             }
         }
@@ -189,9 +311,8 @@ void ModelPainting::PlayPoses(bool saveVideo)
     }
 }
 
-string ModelPainting::createNewRecordDirectory()
+void ModelPainting::createNewRecordDirectory()
 {
-
     char buffer[1024];
     int system_status = 0;
     sprintf(buffer,"/home/dadaoii/mapper_dataset/PngFiles/");
@@ -206,8 +327,8 @@ string ModelPainting::createNewRecordDirectory()
     system_status = system(cmd2);
     if( system_status ) {};
 
-    return buffer;
-
+    m_recordNum = 0;
+    m_recordDirectory = buffer;
 }
 
 
@@ -241,6 +362,7 @@ void ModelPainting::paintGL()
     glTranslatef(0.0, 0.0,m_currPose.zoom);
     glRotatef(m_currPose.rotx, 1.0, 0.0, 0.0);
     glRotatef(m_currPose.roty, 0.0, 1.0, 0.0);
+    glRotatef(m_currPose.rotz, 0.0, 0.0, 1.0);
     glTranslatef(m_currPose.tx,m_currPose.ty,m_currPose.tz);
 
     // draw 3d points
@@ -351,6 +473,7 @@ void ModelPainting::wheelEvent(QWheelEvent *event)
     {
         m_currPose.zoom /= 1.15;
     }
+    //std::cout<<m_currPose.zoom<<std::endl;
     updateGL();
 }
 

@@ -94,7 +94,7 @@
         <x>1050</x>
         <y>380</y>
         <width>123</width>
-        <height>331</height>
+        <height>396</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -141,6 +141,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="RecordCheckBox">
+         <property name="text">
+          <string>Record</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="AddPoseButton">
          <property name="text">
           <string>AddPose</string>
@@ -165,6 +172,13 @@
         <widget class="QPushButton" name="SaveVideoButton">
          <property name="text">
           <string>SaveVideo</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="ResetViewButton">
+         <property name="text">
+          <string>ResetView</string>
          </property>
         </widget>
        </item>

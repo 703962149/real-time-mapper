@@ -152,12 +152,15 @@ void GetCameraPoseThread::run()
         vector<float> tempV= m_stereo->m_dadaoPoses[index];
         float x=tempV[2],y=tempV[3],theta=-tempV[4];
 
-        //build the homographylibviso2_Matrix by current pose
+        //build the homographyMatrix by current pose
         tempM._val[0][0] = cos(theta);  tempM._val[0][1] = 0; tempM._val[0][2] = sin(theta); tempM._val[0][3] = -y;
         tempM._val[1][0] = 0;           tempM._val[1][1] = 1; tempM._val[1][2] = 0;          tempM._val[1][3] = 0;
         tempM._val[2][0] = -sin(theta); tempM._val[2][1] = 0; tempM._val[2][2] = cos(theta); tempM._val[2][3] = x;
         tempM._val[3][0] = 0;           tempM._val[3][1] = 0; tempM._val[3][2] = 0;          tempM._val[3][3] = 1;
         m_HomographyMatrix = tempM;
+        //float sy = sqrt(tempM._val[0][0] * tempM._val[0][0] +  tempM._val[1][0] * tempM._val[1][0] );
+        //float kkky = atan2(-tempM._val[2][0], sy);
+        //std::cout<<-sin(theta)<<" "<<theta<<" "<<kkky<<" "<<asin(-tempM._val[2][0])<<std::endl;
     }
     else if (m_calib->CheckRunDataType() == m_calib->KITTI_DATASET_FLAG)
     {
@@ -166,7 +169,7 @@ void GetCameraPoseThread::run()
         libviso2_Matrix tempM = libviso2_Matrix::eye(4);
         vector<float> tempV= m_stereo->m_kittiPoses[index];
 
-        //build the homographylibviso2_Matrix by current pose
+        //build the homographyMatrix by current pose
         tempM._val[0][0] = tempV[0]; tempM._val[0][1] = tempV[1]; tempM._val[0][2] = tempV[2];  tempM._val[0][3] = tempV[3];
         tempM._val[1][0] = tempV[4]; tempM._val[1][1] = tempV[5]; tempM._val[1][2] = tempV[6];  tempM._val[1][3] = tempV[7];
         tempM._val[2][0] = tempV[8]; tempM._val[2][1] = tempV[9]; tempM._val[2][2] = tempV[10]; tempM._val[2][3] = tempV[11];

@@ -46,6 +46,7 @@ public:
 
     //check whether get pose
     bool CheckPoseFileStatus(){return m_poseFileExist;}
+    bool CheckReadingStatus(){return m_endReading;}
 
 protected:
 
@@ -60,6 +61,8 @@ private:
 
     //flag of pose file
     bool m_poseFileExist;
+
+    bool m_endReading;
 
 signals:
 

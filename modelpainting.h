@@ -34,10 +34,12 @@ public:
     void AddCamera(libviso2_Matrix HomographyMatrix, float s);
     void AddPoints(std::vector<Point3D> p);
     void FollowCamera(libviso2_Matrix H);
+    void ShowMap();
 
     void SetBackgroundFlag(bool background) { m_backgroundFlag = background; updateGL(); }
     void SetShowCamerasFlag(bool showCamFlag) { m_showCamFlag = showCamFlag; updateGL(); }
     void SetFollowCameraFlag(bool followCamFlag) { m_followCamFlag = followCamFlag; updateGL(); }
+    void SetRecordFlag(bool recordFlag){ m_recordFlag = recordFlag;}
 
     void ResetView();
 
@@ -45,7 +47,7 @@ public:
     void DelPose();
     void PlayPoses(bool saveVideo);
 
-    std::string createNewRecordDirectory();
+    void createNewRecordDirectory();
 
 protected:
 
@@ -68,10 +70,13 @@ private:
     struct Pose
     {
         float  zoom;
-        float  rotx,roty;
+        float  rotx,roty,rotz;
         float  tx,ty,tz;
     };
     Pose   m_currPose;
+    Pose   m_prePose;
+    Pose   m_farestPose;
+    //float m_preRoty;
 
     std::deque<Camera> m_cams;
     std::deque<GLuint> m_glList;
@@ -82,7 +87,12 @@ private:
     bool   m_backgroundFlag;
     bool   m_showCamFlag;
     bool   m_followCamFlag;
+    bool   m_recordFlag;
 
+    int m_countPoseFlag;
+    int m_recordNum;
+
+    std::string m_recordDirectory;
 
 signals:
 

@@ -6,6 +6,7 @@ ReadLocalFileThread::ReadLocalFileThread(CalibrationParameters *calib, StereoIma
       ,m_stereo(stereo)
 {
     m_poseFileExist = false;
+    m_endReading = false;
 }
 
 ReadLocalFileThread::~ReadLocalFileThread()
@@ -99,6 +100,7 @@ void ReadLocalFileThread::run()
             cvReleaseImage(&m_dadaoImage[0].m_rectifiedIplImage);
             cvReleaseImage(&m_dadaoImage[1].m_rectifiedIplImage);
         }
+        m_endReading = true;
     }
     //=====================================================================================//
     //=============================ReadKitti===============================================//
